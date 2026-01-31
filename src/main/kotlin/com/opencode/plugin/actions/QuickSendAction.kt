@@ -15,7 +15,7 @@ class QuickSendAction : AnAction() {
         val file = e.getData(CommonDataKeys.VIRTUAL_FILE) ?: return
 
         val selectionModel = editor.selectionModel
-        val selectedText = selectionModel.selectedText ?: return
+        if (!selectionModel.hasSelection()) return
         val document = editor.document
 
         val startLine = document.getLineNumber(selectionModel.selectionStart) + 1
@@ -25,7 +25,6 @@ class QuickSendAction : AnAction() {
             filePath = file.path,
             startLine = startLine,
             endLine = endLine,
-            code = selectedText,
             additionalContext = ""
         )
     }

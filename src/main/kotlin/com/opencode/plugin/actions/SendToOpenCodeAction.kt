@@ -31,7 +31,6 @@ class SendToOpenCodeAction : AnAction() {
                 filePath = file.path,
                 startLine = startLine,
                 endLine = endLine,
-                code = selectedText,
                 additionalContext = additionalContext,
                 agent = agent,
                 overrideSessionId = sessionId

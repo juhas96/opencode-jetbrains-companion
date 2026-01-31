@@ -1,6 +1,11 @@
 # OpenCode Companion - JetBrains Plugin
 
+[![JetBrains Marketplace](https://img.shields.io/jetbrains/plugin/v/eu.devmoon.opencode-companion.svg)](https://plugins.jetbrains.com/plugin/eu.devmoon.opencode-companion)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/eu.devmoon.opencode-companion.svg)](https://plugins.jetbrains.com/plugin/eu.devmoon.opencode-companion)
+
 A JetBrains IDE plugin that integrates with [OpenCode CLI](https://opencode.ai), allowing you to send selected code directly to OpenCode with context.
+
+**Developed by [devmoon](https://devmoon.eu)**
 
 ## Features
 
@@ -14,25 +19,14 @@ A JetBrains IDE plugin that integrates with [OpenCode CLI](https://opencode.ai),
 
 ## Installation
 
-### From ZIP (Manual)
+### From JetBrains Marketplace (Recommended)
 
-1. Download the latest release: `opencode-jetbrains-plugin-1.0.0.zip`
-2. Open your JetBrains IDE (IntelliJ, PyCharm, WebStorm, etc.)
-3. Go to **Settings** → **Plugins** → **⚙️** → **Install Plugin from Disk...**
-4. Select the ZIP file and restart the IDE
+1. Open your JetBrains IDE (IntelliJ, PyCharm, WebStorm, etc.)
+2. Go to **Settings** → **Plugins** → **Marketplace**
+3. Search for **"OpenCode Companion"**
+4. Click **Install** and restart the IDE
 
-### Build from Source
-
-```bash
-# Requires JDK 17
-export JAVA_HOME=/path/to/jdk17
-
-# Build the plugin
-./gradlew buildPlugin
-
-# Plugin ZIP will be at:
-# build/distributions/opencode-jetbrains-plugin-1.0.0.zip
-```
+Or install directly from: [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/eu.devmoon.opencode-companion)
 
 ## Usage
 
@@ -65,7 +59,7 @@ Right-click on selected code → **Send to OpenCode...**
 
 ## Configuration
 
-**Settings** → **Tools** → **OpenCode**
+**Settings** → **Tools** → **OpenCode Companion**
 
 | Setting | Description | Default |
 |---------|-------------|---------|
@@ -106,23 +100,35 @@ Configure username/password in plugin settings.
 
 ## Development
 
+### Build from Source
+
 ```bash
-# Run plugin in sandbox IDE for testing
-./gradlew runIde
+# Requires JDK 17
+export JAVA_HOME=/path/to/jdk17
 
-# Build only
-./gradlew build
-
-# Build distribution ZIP
+# Build the plugin
 ./gradlew buildPlugin
+
+# Plugin ZIP will be at: build/distributions/opencode-jetbrains-plugin-1.0.0.zip
+```
+
+### Run in Sandbox IDE
+
+```bash
+./gradlew runIde
 ```
 
 ## License
 
-MIT
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## Links
 
+- [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/eu.devmoon.opencode-companion)
 - [OpenCode](https://opencode.ai)
 - [OpenCode Documentation](https://opencode.ai/docs/)
-- [OpenCode Server API](https://opencode.ai/docs/server/)
+- [devmoon](https://devmoon.eu)
+
+## Support
+
+For issues and feature requests, please contact [support@devmoon.eu](mailto:support@devmoon.eu).
