@@ -15,6 +15,7 @@ import com.intellij.ui.dsl.builder.panel
 import com.opencode.plugin.service.OpenCodeService
 import com.opencode.plugin.service.OpenCodeSettings
 import java.awt.Color
+import java.net.URI
 import java.awt.Dimension
 import javax.swing.DefaultComboBoxModel
 import javax.swing.DefaultListModel
@@ -38,6 +39,8 @@ class OpenCodeConfigurable : Configurable {
     private lateinit var statusLabel: JBLabel
     private lateinit var testButton: JButton
     private lateinit var discoverButton: JButton
+    private lateinit var killServerButton: JButton
+    private lateinit var killStatusLabel: JBLabel
     private lateinit var serverListModel: DefaultListModel<String>
     private lateinit var serverList: JBList<String>
     private lateinit var discoverStatusLabel: JBLabel
@@ -84,6 +87,8 @@ class OpenCodeConfigurable : Configurable {
         testButton = JButton("Test Connection")
         discoverButton = JButton("Discover Servers")
         discoverStatusLabel = JBLabel("")
+        killServerButton = JButton("Kill Server")
+        killStatusLabel = JBLabel("")
         serverListModel = DefaultListModel()
         serverList = JBList(serverListModel).apply {
             selectionMode = ListSelectionModel.SINGLE_SELECTION
@@ -119,6 +124,32 @@ class OpenCodeConfigurable : Configurable {
                         "Found ${servers.size} server(s)"
                     }
                     discoverStatusLabel.foreground = if (servers.isEmpty()) Color.ORANGE else Color(0, 128, 0)
+                }
+            }.start()
+        }
+
+        killServerButton.addActionListener {
+            killStatusLabel.text = "Killing..."
+            killStatusLabel.foreground = Color.GRAY
+            
+            Thread {
+                val url = serverUrlField.text
+                val port = try {
+                    URI.create(url).port.takeIf { it > 0 } ?: 4096
+                } catch (_: Exception) {
+                    4096
+                }
+                
+                val result = OpenCodeService.killServerByPort(port)
+                
+                javax.swing.SwingUtilities.invokeLater {
+                    if (result.success) {
+                        killStatusLabel.text = result.message
+                        killStatusLabel.foreground = Color(0, 128, 0)
+                    } else {
+                        killStatusLabel.text = result.message
+                        killStatusLabel.foreground = Color.RED
+                    }
                 }
             }.start()
         }
@@ -203,11 +234,15 @@ class OpenCodeConfigurable : Configurable {
                     button("Refresh") { loadAgents() }
                 }
             }
-            group("Connection Test") {
+            group("Server Management") {
                 row {
                     cell(testButton)
                     cell(statusLabel)
                 }
+                row {
+                    cell(killServerButton)
+                    cell(killStatusLabel)
+                }.comment("Kill stuck OpenCode server process on the configured port")
             }
         }
     }
