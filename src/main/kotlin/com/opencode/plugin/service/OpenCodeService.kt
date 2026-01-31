@@ -10,6 +10,9 @@ import com.intellij.openapi.project.Project
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import com.intellij.execution.configurations.GeneralCommandLine
+import com.intellij.execution.util.ExecUtil
+import com.intellij.openapi.util.SystemInfo
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -383,6 +386,72 @@ class OpenCodeService(private val project: Project) {
 
     companion object {
         private val commonPorts = listOf(4096, 4097, 4098, 4099, 4100, 4101, 4102, 4103, 4104, 4105)
+        private val log = Logger.getInstance(OpenCodeService::class.java)
+        
+        data class KillResult(
+            val success: Boolean,
+            val message: String,
+            val pid: Int? = null
+        )
+        
+        fun parsePidFromWindowsNetstat(output: String): Int? {
+            // Parse Windows netstat: "  TCP    0.0.0.0:4096    0.0.0.0:0    LISTENING    12345"
+            return output.lines()
+                .firstOrNull { it.contains("LISTENING") }
+                ?.trim()
+                ?.split(Regex("\\s+"))
+                ?.lastOrNull()
+                ?.toIntOrNull()
+        }
+        
+        fun parsePidFromLsof(output: String): Int? {
+            return output.trim().lines().firstOrNull()?.toIntOrNull()
+        }
+        
+        fun findPidByPort(port: Int): Int? {
+            return try {
+                val command = if (SystemInfo.isWindows) {
+                    GeneralCommandLine("cmd", "/c", "netstat -ano | findstr :$port | findstr LISTENING")
+                } else {
+                    GeneralCommandLine("lsof", "-ti:$port")
+                }
+                
+                val output = ExecUtil.execAndGetOutput(command)
+                if (output.exitCode == 0 && output.stdout.isNotBlank()) {
+                    if (SystemInfo.isWindows) {
+                        parsePidFromWindowsNetstat(output.stdout)
+                    } else {
+                        parsePidFromLsof(output.stdout)
+                    }
+                } else null
+            } catch (e: Exception) {
+                log.warn("Failed to find PID for port $port", e)
+                null
+            }
+        }
+        
+        fun killServerByPort(port: Int): KillResult {
+            val pid = findPidByPort(port)
+                ?: return KillResult(false, "No process found listening on port $port")
+            
+            return try {
+                val command = if (SystemInfo.isWindows) {
+                    GeneralCommandLine("taskkill", "/F", "/PID", pid.toString())
+                } else {
+                    GeneralCommandLine("kill", "-9", pid.toString())
+                }
+                
+                val output = ExecUtil.execAndGetOutput(command)
+                if (output.exitCode == 0) {
+                    KillResult(true, "Killed process $pid on port $port", pid)
+                } else {
+                    KillResult(false, "Failed to kill process $pid: ${output.stderr}", pid)
+                }
+            } catch (e: Exception) {
+                log.error("Failed to kill process on port $port", e)
+                KillResult(false, "Error killing process: ${e.message}", pid)
+            }
+        }
         
         fun discoverServers(): List<DiscoveredServer> {
             val httpClient = HttpClient.newBuilder()

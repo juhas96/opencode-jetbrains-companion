@@ -1,13 +1,13 @@
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 plugins {
-    kotlin("jvm") version "2.1.0"
-    kotlin("plugin.serialization") version "2.1.0"
+    kotlin("jvm") version "2.3.0"
+    kotlin("plugin.serialization") version "2.3.0"
     id("org.jetbrains.intellij.platform") version "2.11.0"
 }
 
 group = "eu.devmoon"
-version = "1.0.0"
+version = "1.1.0"
 
 repositories {
     mavenCentral()
@@ -22,11 +22,22 @@ dependencies {
         testFramework(TestFrameworkType.Platform)
     }
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testImplementation("io.mockk:mockk:1.13.9")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.3.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(25)
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 intellijPlatform {
@@ -39,8 +50,18 @@ intellijPlatform {
 }
 
 tasks {
+    test {
+        useJUnitPlatform()
+    }
+    
     patchPluginXml {
         changeNotes.set("""
+            <h3>1.1.0</h3>
+            <ul>
+                <li>Added "Kill Server" button to settings - kill stuck OpenCode server processes by port</li>
+                <li>Cross-platform support (macOS, Linux, Windows) for process termination</li>
+                <li>Added comprehensive unit test suite (63 tests covering settings, service, and dialog components)</li>
+            </ul>
             <h3>1.0.0</h3>
             <p>Initial release of OpenCode Companion by devmoon.</p>
             <ul>
