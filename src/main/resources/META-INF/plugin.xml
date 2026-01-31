@@ -1,0 +1,80 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>com.opencode.jetbrains.plugin</id>
+    <name>OpenCode Companion</name>
+    <vendor email="support@opencode.ai" url="https://opencode.ai">OpenCode</vendor>
+    <description><![CDATA[
+<p>Seamlessly integrate <a href="https://opencode.ai">OpenCode CLI</a> with your JetBrains IDE. Send selected code directly to OpenCode with full context - file paths, line numbers, and custom instructions.</p>
+
+<h2>Features</h2>
+<ul>
+    <li><b>Send Code with Context</b> - Select code and send it with automatic file path and line number references</li>
+    <li><b>Quick Templates</b> - Pre-defined prompts: Explain, Refactor, Write Tests, Fix Bugs, Optimize, Document, Review</li>
+    <li><b>Agent Selection</b> - Choose from available agents (build, oracle, explore, librarian, etc.) - auto-discovered from server</li>
+    <li><b>Session Targeting</b> - Select specific OpenCode sessions or auto-detect the active one</li>
+    <li><b>TUI Mode</b> - Append code references to your terminal TUI prompt for review before sending</li>
+    <li><b>Auto-Submit</b> - Optionally auto-submit after appending in TUI mode</li>
+    <li><b>Server Discovery</b> - Scan for running OpenCode instances across multiple ports</li>
+</ul>
+
+<h2>Keyboard Shortcuts</h2>
+<ul>
+    <li><b>Cmd+Shift+.</b> (Mac) / <b>Ctrl+Shift+.</b> (Win/Linux) - Send to OpenCode with dialog</li>
+    <li><b>Cmd+Alt+.</b> (Mac) / <b>Ctrl+Alt+.</b> (Win/Linux) - Quick send without dialog</li>
+</ul>
+
+<h2>Getting Started</h2>
+<ol>
+    <li>Start OpenCode with a known port: <code>opencode --port 4096</code></li>
+    <li>Select code in your editor</li>
+    <li>Press <b>Cmd+Shift+.</b> or right-click → <b>Send to OpenCode...</b></li>
+    <li>Choose a template, agent, and add context</li>
+    <li>Press <b>Enter</b> to send</li>
+</ol>
+
+<h2>Configuration</h2>
+<p>Go to <b>Settings → Tools → OpenCode</b> to configure server URL, authentication, TUI mode, and default agent.</p>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable
+                parentId="tools"
+                instance="com.opencode.plugin.settings.OpenCodeConfigurable"
+                id="com.opencode.plugin.settings"
+                displayName="OpenCode"/>
+        <applicationService
+                serviceImplementation="com.opencode.plugin.service.OpenCodeSettings"/>
+        <projectService
+                serviceImplementation="com.opencode.plugin.service.OpenCodeService"/>
+        <notificationGroup id="OpenCode"
+                           displayType="BALLOON"/>
+    </extensions>
+
+    <actions>
+        <!-- Main action with dialog -->
+        <action id="OpenCode.SendToOpenCode"
+                class="com.opencode.plugin.actions.SendToOpenCodeAction"
+                text="Send to OpenCode..."
+                description="Send selected code to OpenCode with additional context"
+                icon="/icons/opencode.svg">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift PERIOD"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift PERIOD"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift PERIOD"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+
+        <!-- Quick send without dialog -->
+        <action id="OpenCode.QuickSend"
+                class="com.opencode.plugin.actions.QuickSendAction"
+                text="Quick Send to OpenCode"
+                description="Immediately send selected code to OpenCode"
+                icon="/icons/opencode.svg">
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt PERIOD"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt PERIOD"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt PERIOD"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="OpenCode.SendToOpenCode"/>
+        </action>
+    </actions>
+</idea-plugin>
