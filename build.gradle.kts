@@ -6,7 +6,7 @@ plugins {
     id("org.jetbrains.intellij.platform") version "2.11.0"
 }
 
-group = "com.opencode.plugin"
+group = "eu.devmoon"
 version = "1.0.0"
 
 repositories {
@@ -41,20 +41,29 @@ intellijPlatform {
 tasks {
     patchPluginXml {
         changeNotes.set("""
-            <h3>1.0.0 - Initial Release</h3>
+            <h3>1.0.0</h3>
+            <p>Initial release of OpenCode Companion by devmoon.</p>
             <ul>
                 <li>Send selected code to OpenCode with file path and line number context</li>
-                <li>Keyboard shortcuts: Cmd/Ctrl+Shift+. (with dialog), Cmd/Ctrl+Alt+. (quick send)</li>
+                <li>Keyboard shortcuts for quick access</li>
                 <li>Right-click context menu integration</li>
-                <li>Quick templates: Explain, Refactor, Write Tests, Fix Bugs, Optimize, Document, Review</li>
-                <li>Dynamic agent selection (auto-discovered from server)</li>
-                <li>Multiple session support with session selector</li>
-                <li>TUI mode: append code references to terminal prompt</li>
-                <li>Auto-submit option for TUI mode</li>
-                <li>Server discovery: scan ports 4096-4105 for running instances</li>
+                <li>Pre-defined templates: Explain, Refactor, Write Tests, Fix Bugs, Optimize, Document, Review</li>
+                <li>Dynamic agent selection from server</li>
+                <li>Multiple session support</li>
+                <li>TUI mode with optional auto-submit</li>
+                <li>Automatic server discovery</li>
                 <li>HTTP Basic Auth support</li>
-                <li>Configurable settings: server URL, session ID, default agent</li>
             </ul>
         """.trimIndent())
+    }
+    
+    signPlugin {
+        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
+        privateKey.set(System.getenv("PRIVATE_KEY"))
+        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+    }
+    
+    publishPlugin {
+        token.set(System.getenv("PUBLISH_TOKEN"))
     }
 }

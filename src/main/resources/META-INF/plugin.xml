@@ -1,8 +1,8 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.opencode.jetbrains.plugin</id>
+    <id>eu.devmoon.opencode-companion</id>
     <name>OpenCode Companion</name>
-    <vendor email="support@opencode.ai" url="https://opencode.ai">OpenCode</vendor>
+    <vendor email="support@devmoon.eu" url="https://devmoon.eu">devmoon</vendor>
     <description><![CDATA[
 <p>Seamlessly integrate <a href="https://opencode.ai">OpenCode CLI</a> with your JetBrains IDE. Send selected code directly to OpenCode with full context - file paths, line numbers, and custom instructions.</p>
 
@@ -33,31 +33,31 @@
 </ol>
 
 <h2>Configuration</h2>
-<p>Go to <b>Settings → Tools → OpenCode</b> to configure server URL, authentication, TUI mode, and default agent.</p>
+<p>Go to <b>Settings → Tools → OpenCode Companion</b> to configure server URL, authentication, TUI mode, and default agent.</p>
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
+
+    <resource-bundle>messages.OpenCodeBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
         <applicationConfigurable
                 parentId="tools"
                 instance="com.opencode.plugin.settings.OpenCodeConfigurable"
                 id="com.opencode.plugin.settings"
-                displayName="OpenCode"/>
+                key="settings.displayName"
+                bundle="messages.OpenCodeBundle"/>
         <applicationService
                 serviceImplementation="com.opencode.plugin.service.OpenCodeSettings"/>
-        <projectService
-                serviceImplementation="com.opencode.plugin.service.OpenCodeService"/>
-        <notificationGroup id="OpenCode"
-                           displayType="BALLOON"/>
+        <notificationGroup id="OpenCodeCompanion"
+                           displayType="BALLOON"
+                           key="notification.group"
+                           bundle="messages.OpenCodeBundle"/>
     </extensions>
 
     <actions>
-        <!-- Main action with dialog -->
-        <action id="OpenCode.SendToOpenCode"
+        <action id="OpenCodeCompanion.Send"
                 class="com.opencode.plugin.actions.SendToOpenCodeAction"
-                text="Send to OpenCode..."
-                description="Send selected code to OpenCode with additional context"
                 icon="/icons/opencode.svg">
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift PERIOD"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift PERIOD"/>
@@ -65,16 +65,13 @@
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
         </action>
 
-        <!-- Quick send without dialog -->
-        <action id="OpenCode.QuickSend"
+        <action id="OpenCodeCompanion.QuickSend"
                 class="com.opencode.plugin.actions.QuickSendAction"
-                text="Quick Send to OpenCode"
-                description="Immediately send selected code to OpenCode"
                 icon="/icons/opencode.svg">
             <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt PERIOD"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt PERIOD"/>
             <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt PERIOD"/>
-            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="OpenCode.SendToOpenCode"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="after" relative-to-action="OpenCodeCompanion.Send"/>
         </action>
     </actions>
 </idea-plugin>

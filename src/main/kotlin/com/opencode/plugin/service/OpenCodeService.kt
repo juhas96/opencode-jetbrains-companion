@@ -31,44 +31,6 @@ class OpenCodeService(private val project: Project) {
     }
 
     @Serializable
-    data class FilePart(
-        val type: String = "file",
-        val url: String,
-        val filename: String,
-        val mime: String = "text/plain"
-    )
-
-    @Serializable
-    data class TextPart(
-        val type: String = "text",
-        val text: String
-    )
-
-    @Serializable
-    data class PromptRequest(
-        val parts: List<PromptPart>,
-        val agent: String? = null,
-        val noReply: Boolean? = null
-    )
-
-    @Serializable
-    sealed class PromptPart
-
-    @Serializable
-    data class FilePartData(
-        val type: String = "file",
-        val url: String,
-        val filename: String,
-        val mime: String = "text/plain"
-    ) : PromptPart()
-
-    @Serializable
-    data class TextPartData(
-        val type: String = "text",
-        val text: String
-    ) : PromptPart()
-
-    @Serializable
     data class SessionInfo(
         val id: String,
         val title: String = "",
@@ -104,7 +66,6 @@ class OpenCodeService(private val project: Project) {
         filePath: String,
         startLine: Int,
         endLine: Int,
-        code: String,
         additionalContext: String,
         agent: String = "",
         overrideSessionId: String = ""
@@ -415,7 +376,7 @@ class OpenCodeService(private val project: Project) {
 
     private fun showNotification(message: String, type: NotificationType) {
         NotificationGroupManager.getInstance()
-            .getNotificationGroup("OpenCode")
+            .getNotificationGroup("OpenCodeCompanion")
             .createNotification(message, type)
             .notify(project)
     }
@@ -467,7 +428,7 @@ class OpenCodeService(private val project: Project) {
                         projectDir = projectDir,
                         sessionCount = sessions.size
                     )
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     null
                 }
             }
